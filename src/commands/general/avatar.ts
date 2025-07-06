@@ -1,37 +1,39 @@
 import {
-  Command,
   Declare,
-  CommandContext,
   Options,
+  Command,
+  CommandContext,
   createUserOption,
   Embed,
 } from "seyfert";
 
-const options = {
-  member: createUserOption({
-    description: "Usuario del cual deseas obtener el avatar.",
+const opciones = {
+  usuario: createUserOption({
+    description: "El usuario del cual deseas obtener su avatar.",
     required: false,
   }),
 };
 
 @Declare({
   name: "avatar",
-  description: "Obten tu avatar o el de un usuario mencionado.",
+  description: "Obten tu avatar o el de otro usuario.",
 })
-@Options(options)
+@Options(opciones)
 export default class AvatarCommand extends Command {
-  async run(ctx: CommandContext<typeof options>) {
-    const usuario = ctx.options.member || ctx.author;
+  async run(ctx: CommandContext<typeof opciones>) {
+    const user = ctx.options.usuario || ctx.author; // OR
 
-    let avatarURL = usuario.avatarURL({ size: 1024 });
+    let avatarURL = user.avatarURL({
+      size: 1024,
+    });
+
+    let embed = new Embed()
+      .setImage(avatarURL)
+      .setDescription(`Avatar de ${user.toString()}`)
+      .setColor("LightGrey");
 
     ctx.editOrReply({
-      embeds: [
-        new Embed()
-          .setDescription(`## Avatar de ${usuario.toString()}`)
-          .setColor("Blurple")
-          .setImage(avatarURL),
-      ],
+      embeds: [embed],
     });
   }
 }
